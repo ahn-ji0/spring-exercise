@@ -39,4 +39,24 @@ class UserDaoTest {
 
         assertEquals(1,userDao.getCount());
     }
+
+    @Test
+    void count() throws SQLException, ClassNotFoundException {
+        UserDao userDao = context.getBean("AWSUserDao",UserDao.class);
+
+        userDao.deleteAll();
+
+        User user1 = new User("1","Choco","913");
+        User user2 = new User("2","Chicon","214");
+        User user3 = new User("3","Ppang","1210");
+
+        userDao.insert(user1);
+        assertEquals(1,userDao.getCount());
+
+        userDao.insert(user2);
+        assertEquals(2,userDao.getCount());
+
+        userDao.insert(user3);
+        assertEquals(3,userDao.getCount());
+    }
 }
