@@ -32,9 +32,7 @@ public class UserDao {
             System.out.println("Status: "+status);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } finally {
+        }finally {
             if(ps!=null){
                 try{
                     ps.close();
@@ -52,7 +50,7 @@ public class UserDao {
         }
     }
 
-    public User selectId(String id) throws SQLException, ClassNotFoundException {
+    public User selectId(String id) {
         Connection connection = null;
         PreparedStatement ps = null;
         User user = null;
@@ -71,8 +69,6 @@ public class UserDao {
             if(user == null) throw new EmptyResultDataAccessException(1);
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
             if(rs!=null){
@@ -111,8 +107,6 @@ public class UserDao {
             System.out.println("Status: "+status);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         } finally {
             if(ps!=null){
                 try{
@@ -146,8 +140,6 @@ public class UserDao {
             count = rs.getInt(1);
             return count;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
             if(rs!=null){
