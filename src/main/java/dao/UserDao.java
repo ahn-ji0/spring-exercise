@@ -2,6 +2,7 @@ package dao;
 
 import connectionmaker.ConnectionMaker;
 import domain.User;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,16 +34,19 @@ public class UserDao {
     public User selectId(String id) throws SQLException, ClassNotFoundException {
         Connection connection = this.connectionMaker.makeConnection();
         PreparedStatement ps = connection.prepareStatement("SELECT id,name,password FROM users WHERE id = ?");
-        ps.setString(1,id);
+        ps.setString(1, id);
 
+        User user = null;
         ResultSet rs = ps.executeQuery();
-        rs.next();
-
-        User user = new User(rs.getString("id"),rs.getString("name"),rs.getString("password"));
+        if (rs.next()) {
+            user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
+        }
 
         rs.close();
         ps.close();
         connection.close();
+
+        if(user == null) throw new EmptyResultDataAccessException(1);
 
         return user;
     }
