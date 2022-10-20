@@ -25,30 +25,33 @@ class UserDaoTest {
     @Test
     @DisplayName("insert and select")
     void insertAndSelect() throws SQLException, ClassNotFoundException {
-//      UserDao userDao1 = new UserDaoFactory().AWSUserDao(); 대신에
+        User user1 = new User("1","Choco","913");
+        User user2 = new User("2","Chicon","214");
+        User user3 = new User("3","Ppang","1210");
 
         UserDao userDao = context.getBean("AWSUserDao",UserDao.class);
 
         userDao.deleteAll();
+        assertEquals(0,userDao.getCount());
 
-        User user = new User("200","영지안","1234");
-        userDao.insert(user);
-
-        User user2 = userDao.selectId("200");
-        assertEquals("영지안",user2.getName());
-
+        userDao.insert(user1);
         assertEquals(1,userDao.getCount());
+
+        User user = userDao.selectId("1");
+        assertEquals(user1.getName(),user.getName());
+        assertEquals(user1.getPassword(),user.getPassword());
     }
 
     @Test
     void count() throws SQLException, ClassNotFoundException {
-        UserDao userDao = context.getBean("AWSUserDao",UserDao.class);
-
-        userDao.deleteAll();
 
         User user1 = new User("1","Choco","913");
         User user2 = new User("2","Chicon","214");
         User user3 = new User("3","Ppang","1210");
+
+        UserDao userDao = context.getBean("AWSUserDao",UserDao.class);
+
+        userDao.deleteAll();
 
         userDao.insert(user1);
         assertEquals(1,userDao.getCount());
