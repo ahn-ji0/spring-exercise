@@ -25,12 +25,15 @@ class UserDaoTest {
     @Test
     @DisplayName("insert and select")
     void insertAndSelect() throws SQLException, ClassNotFoundException {
+//        UserDao userDao1 = new UserDaoFactory().AWSUserDao();
         UserDao userDao = context.getBean("AWSUserDao",UserDao.class);
-
+        userDao.deleteAll();
         User user = new User("200","영지안","1234");
         userDao.insert(user);
 
         User user2 = userDao.selectId("200");
         assertEquals("영지안",user2.getName());
+
+        assertEquals(1,userDao.getCount());
     }
 }
