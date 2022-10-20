@@ -16,65 +16,161 @@ public class UserDao {
         this.connectionMaker = connectionMaker;
     }
 
-    public void insert(User user) throws SQLException, ClassNotFoundException {
-        Connection connection = this.connectionMaker.makeConnection();
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO users(id,name,password) VALUES(?,?,?)");
+    public void insert(User user){
 
-        ps.setString(1,user.getId());
-        ps.setString(2,user.getName());
-        ps.setString(3,user.getPassword());
+        Connection connection = null;
+        PreparedStatement ps = null;
+        try {
+            connection = this.connectionMaker.makeConnection();
+            ps = connection.prepareStatement("INSERT INTO users(id,name,password) VALUES(?,?,?)");
 
-        int status = ps.executeUpdate();
-        System.out.println("Status: "+status);
+            ps.setString(1,user.getId());
+            ps.setString(2,user.getName());
+            ps.setString(3,user.getPassword());
 
-        ps.close();
-        connection.close();
+            int status = ps.executeUpdate();
+            System.out.println("Status: "+status);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(ps!=null){
+                try{
+                    ps.close();
+                }catch (SQLException e){
+
+                }
+            }
+            if(connection!=null){
+                try{
+                    connection.close();
+                }catch (SQLException e){
+
+                }
+            }
+        }
     }
 
     public User selectId(String id) throws SQLException, ClassNotFoundException {
-        Connection connection = this.connectionMaker.makeConnection();
-        PreparedStatement ps = connection.prepareStatement("SELECT id,name,password FROM users WHERE id = ?");
-        ps.setString(1, id);
-
+        Connection connection = null;
+        PreparedStatement ps = null;
         User user = null;
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
+        ResultSet rs = null;
+        try {
+            connection = this.connectionMaker.makeConnection();
+            ps = connection.prepareStatement("SELECT id,name,password FROM users WHERE id = ?");
+            ps.setString(1, id);
+
+            user = null;
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
+            }
+
+            if(user == null) throw new EmptyResultDataAccessException(1);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(rs!=null){
+                try{
+                    rs.close();
+                }catch (SQLException e){
+
+                }
+            }
+            if(ps!=null){
+                try{
+                    ps.close();
+                }catch (SQLException e){
+
+                }
+            }
+            if(connection!=null){
+                try{
+                    connection.close();
+                }catch (SQLException e){
+
+                }
+            }
         }
-
-        rs.close();
-        ps.close();
-        connection.close();
-
-        if(user == null) throw new EmptyResultDataAccessException(1);
-
         return user;
     }
 
-    public void deleteAll() throws SQLException, ClassNotFoundException {
-        Connection connection = this.connectionMaker.makeConnection();
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM users");
+    public void deleteAll() {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        try {
+            connection = this.connectionMaker.makeConnection();
+            ps = connection.prepareStatement("DELETE FROM users");
 
-        int status = ps.executeUpdate();
-        System.out.println("Status: "+status);
+            int status = ps.executeUpdate();
+            System.out.println("Status: "+status);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(ps!=null){
+                try{
+                    ps.close();
+                }catch (SQLException e){
 
-        ps.close();
-        connection.close();
+                }
+            }
+            if(connection!=null){
+                try{
+                    connection.close();
+                }catch (SQLException e){
+
+                }
+            }
+        }
     }
 
-    public int getCount() throws SQLException, ClassNotFoundException {
-        Connection connection = this.connectionMaker.makeConnection();
-        PreparedStatement ps = connection.prepareStatement("SELECT count(*) FROM users");
+    public int getCount(){
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int count = 0;
+        try {
+            connection = this.connectionMaker.makeConnection();
+            ps = connection.prepareStatement("SELECT count(*) FROM users");
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
+            rs = ps.executeQuery();
+            rs.next();
 
-        int count = rs.getInt(1);
+            count = rs.getInt(1);
+            return count;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(rs!=null){
+                try{
+                    rs.close();
+                }catch (SQLException e){
 
-        rs.close();
-        ps.close();
-        connection.close();
+                }
+            }
+            if(ps!=null){
+                try{
+                    ps.close();
+                }catch (SQLException e){
 
-        return count;
+                }
+            }
+            if(connection!=null){
+                try{
+                    connection.close();
+                }catch (SQLException e){
+
+                }
+            }
+        }
     }
 }
