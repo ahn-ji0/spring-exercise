@@ -19,23 +19,18 @@ public class UserDao {
         this.connectionMaker = connectionMaker;
     }
 
-    public void insert(User user){
-
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt){
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = this.connectionMaker.makeConnection();
-            ps = new AddStrategy().makeStatement(connection);
-
-            ps.setString(1,user.getId());
-            ps.setString(2,user.getName());
-            ps.setString(3,user.getPassword());
+            ps = stmt.makeStatement(connection);
 
             ps.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }finally {
+        } finally {
             if(ps!=null){
                 try{
                     ps.close();
@@ -51,6 +46,14 @@ public class UserDao {
                 }
             }
         }
+    }
+
+    public void insert(User user){
+        jdbcContextWithStatementStrategy(new AddStrategy(user));
+    }
+
+    public void deleteAll() {
+        this.jdbcContextWithStatementStrategy(new DeleteAllStrategy());
     }
 
     public User selectId(String id) {
@@ -99,38 +102,6 @@ public class UserDao {
                 }
             }
         }
-    }
-
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt){
-        Connection connection = null;
-        PreparedStatement ps = null;
-        try {
-            connection = this.connectionMaker.makeConnection();
-            ps = stmt.makeStatement(connection);
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if(ps!=null){
-                try{
-                    ps.close();
-                }catch (SQLException e){
-
-                }
-            }
-            if(connection!=null){
-                try{
-                    connection.close();
-                }catch (SQLException e){
-
-                }
-            }
-        }
-    }
-    public void deleteAll() {
-        this.jdbcContextWithStatementStrategy(new DeleteAllStrategy());
     }
 
     public int getCount(){
