@@ -3,7 +3,9 @@ package dao;
 import connectionmaker.ConnectionMaker;
 import domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
+import statement.AddStrategy;
 import statement.DeleteAllStrategy;
+import statement.StatementStrategy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +25,7 @@ public class UserDao {
         PreparedStatement ps = null;
         try {
             connection = this.connectionMaker.makeConnection();
-            ps = connection.prepareStatement("INSERT INTO users(id,name,password) VALUES(?,?,?)");
+            ps = new AddStrategy().makeStatement(connection);
 
             ps.setString(1,user.getId());
             ps.setString(2,user.getName());
@@ -99,12 +101,12 @@ public class UserDao {
         }
     }
 
-    public void deleteAll() {
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt){
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = this.connectionMaker.makeConnection();
-            ps = new DeleteAllStrategy().makeStatement(connection);
+            ps = stmt.makeStatement(connection);
 
             ps.executeUpdate();
 
@@ -126,6 +128,9 @@ public class UserDao {
                 }
             }
         }
+    }
+    public void deleteAll() {
+        this.jdbcContextWithStatementStrategy(new DeleteAllStrategy());
     }
 
     public int getCount(){
