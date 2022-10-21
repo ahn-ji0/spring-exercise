@@ -68,6 +68,9 @@ public class UserDao {
 
             if(user == null) throw new EmptyResultDataAccessException(1);
 
+            //return을 try문 내에 넣어도 finally는 실행된다.
+            return user;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
@@ -93,7 +96,6 @@ public class UserDao {
                 }
             }
         }
-        return user;
     }
 
     public void deleteAll() {
