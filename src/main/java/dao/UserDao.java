@@ -3,6 +3,7 @@ package dao;
 import connectionmaker.ConnectionMaker;
 import domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
+import statement.DeleteAllStrategy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,8 +29,8 @@ public class UserDao {
             ps.setString(2,user.getName());
             ps.setString(3,user.getPassword());
 
-            int status = ps.executeUpdate();
-            System.out.println("Status: "+status);
+            ps.executeUpdate();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }finally {
@@ -103,10 +104,10 @@ public class UserDao {
         PreparedStatement ps = null;
         try {
             connection = this.connectionMaker.makeConnection();
-            ps = connection.prepareStatement("DELETE FROM users");
+            ps = new DeleteAllStrategy().makeStatement(connection);
 
-            int status = ps.executeUpdate();
-            System.out.println("Status: "+status);
+            ps.executeUpdate();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
