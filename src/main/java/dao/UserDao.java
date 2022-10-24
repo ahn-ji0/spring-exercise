@@ -7,23 +7,30 @@ import statement.AddStrategy;
 import statement.DeleteAllStrategy;
 import statement.StatementStrategy;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao {
-    private ConnectionMaker connectionMaker;
+//    private ConnectionMaker connectionMaker;
+    private final DataSource dataSource;
 
-    public UserDao(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+//    public UserDao(ConnectionMaker connectionMaker) {
+//        this.connectionMaker = connectionMaker;
+//    }
+
+
+    public UserDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public void jdbcContextWithStatementStrategy(StatementStrategy stmt){
         Connection connection = null;
         PreparedStatement ps = null;
         try {
-            connection = this.connectionMaker.makeConnection();
+            connection = dataSource.getConnection();
             ps = stmt.makeStatement(connection);
 
             ps.executeUpdate();
@@ -85,7 +92,7 @@ public class UserDao {
         User user = null;
         ResultSet rs = null;
         try {
-            connection = this.connectionMaker.makeConnection();
+            connection = dataSource.getConnection();
             ps = connection.prepareStatement("SELECT id,name,password FROM users WHERE id = ?");
             ps.setString(1, id);
 
@@ -133,7 +140,7 @@ public class UserDao {
         ResultSet rs = null;
         int count = 0;
         try {
-            connection = this.connectionMaker.makeConnection();
+            connection = dataSource.getConnection();
             ps = connection.prepareStatement("SELECT count(*) FROM users");
 
             rs = ps.executeQuery();
