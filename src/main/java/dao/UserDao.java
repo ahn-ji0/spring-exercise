@@ -28,6 +28,13 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    private RowMapper<User> rowMapper = new RowMapper<User>() {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User(rs.getString("id"),rs.getString("name"),rs.getString("password"));
+            return user;
+        }
+    };
 
     public void insert(final User user){
         this.jdbcTemplate.update("INSERT INTO users(id,name,password) VALUES(?,?,?)",user.getId(),user.getName(),user.getPassword());
@@ -39,13 +46,6 @@ public class UserDao {
 
     public User selectId(String id){
         String sql = "select * from users where id = ?";
-        RowMapper<User> rowMapper = new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User(rs.getString("id"),rs.getString("name"),rs.getString("password"));
-                return user;
-            }
-        };
         return this.jdbcTemplate.queryForObject(sql,rowMapper,id);
     }
 
@@ -55,13 +55,6 @@ public class UserDao {
 
     public List<User> getAll(){
         String sql = "select * from users order by id";
-        RowMapper<User> rowMapper = new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User(rs.getString("id"),rs.getString("name"),rs.getString("password"));
-                return user;
-            }
-        };
         return this.jdbcTemplate.query(sql,rowMapper);
     }
 
