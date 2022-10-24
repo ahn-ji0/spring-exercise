@@ -53,14 +53,14 @@ class UserDaoTest {
         assertEquals(user1.getPassword(), user.getPassword());
     }
 
-    @Test
-    @DisplayName("anonymous test")
-    void Anonymous(){
-        userDao.insertAnonymous(user1);
-        assertEquals(1, userDao.getCount());
-        userDao.deleteAllAnonymous();
-        assertEquals(0,userDao.getCount());
-    }
+//    @Test
+//    @DisplayName("anonymous test")
+//    void Anonymous(){
+//        userDao.insertAnonymous(user1);
+//        assertEquals(1, userDao.getCount());
+//        userDao.deleteAllAnonymous();
+//        assertEquals(0,userDao.getCount());
+//    }
     @Test
     void count() throws SQLException, ClassNotFoundException {
 

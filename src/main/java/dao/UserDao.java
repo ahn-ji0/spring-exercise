@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 public class UserDao {
 
-    private JdbcContext jdbcContext;
+    private final JdbcContext jdbcContext;
     private final DataSource dataSource;
 
 
@@ -24,14 +24,8 @@ public class UserDao {
         this.jdbcContext = new JdbcContext(this.dataSource);
     }
 
-
-
-    public void insert(User user){
-        jdbcContext.workWithStatementStrategy(new AddStrategy(user));
-    }
-
     //한번만 쓰이는 AddStrategy 클래스를 따로 만들지 않고 익명 내부 클래스로 선언
-    public void insertAnonymous(User user){
+    public void insert(User user){
         jdbcContext.workWithStatementStrategy(new StatementStrategy() {
             @Override
             public PreparedStatement makeStatement(Connection c) throws SQLException {
@@ -45,18 +39,10 @@ public class UserDao {
         });
     }
 
-    public void deleteAll() {
-        jdbcContext.workWithStatementStrategy(new DeleteAllStrategy());
+    public void deleteAll(){
+        jdbcContext.executeSql("DELETE FROM users");
     }
 
-    public void deleteAllAnonymous(){
-        jdbcContext.workWithStatementStrategy(new StatementStrategy() {
-            @Override
-            public PreparedStatement makeStatement(Connection c) throws SQLException {
-                return c.prepareStatement("DELETE FROM users");
-            }
-        });
-    }
     public User selectId(String id) {
         Connection connection = null;
         PreparedStatement ps = null;
