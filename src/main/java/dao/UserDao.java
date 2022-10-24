@@ -14,54 +14,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao {
-//    private ConnectionMaker connectionMaker;
-    private final DataSource dataSource;
 
-//    public UserDao(ConnectionMaker connectionMaker) {
-//        this.connectionMaker = connectionMaker;
-//    }
+    private JdbcContext jdbcContext;
+    private final DataSource dataSource;
 
 
     public UserDao(DataSource dataSource) {
         this.dataSource = dataSource;
+        this.jdbcContext = new JdbcContext(this.dataSource);
     }
 
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt){
-        Connection connection = null;
-        PreparedStatement ps = null;
-        try {
-            connection = dataSource.getConnection();
-            ps = stmt.makeStatement(connection);
 
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if(ps!=null){
-                try{
-                    ps.close();
-                }catch (SQLException e){
-
-                }
-            }
-            if(connection!=null){
-                try{
-                    connection.close();
-                }catch (SQLException e){
-
-                }
-            }
-        }
-    }
 
     public void insert(User user){
-        jdbcContextWithStatementStrategy(new AddStrategy(user));
+        jdbcContext.workWithStatementStrategy(new AddStrategy(user));
     }
 
     //한번만 쓰이는 AddStrategy 클래스를 따로 만들지 않고 익명 내부 클래스로 선언
     public void insertAnonymous(User user){
-        jdbcContextWithStatementStrategy(new StatementStrategy() {
+        jdbcContext.workWithStatementStrategy(new StatementStrategy() {
             @Override
             public PreparedStatement makeStatement(Connection c) throws SQLException {
                 PreparedStatement ps = c.prepareStatement("INSERT INTO users(id,name,password) VALUES(?,?,?)");
@@ -75,11 +46,11 @@ public class UserDao {
     }
 
     public void deleteAll() {
-        jdbcContextWithStatementStrategy(new DeleteAllStrategy());
+        jdbcContext.workWithStatementStrategy(new DeleteAllStrategy());
     }
 
     public void deleteAllAnonymous(){
-        jdbcContextWithStatementStrategy(new StatementStrategy() {
+        jdbcContext.workWithStatementStrategy(new StatementStrategy() {
             @Override
             public PreparedStatement makeStatement(Connection c) throws SQLException {
                 return c.prepareStatement("DELETE FROM users");
