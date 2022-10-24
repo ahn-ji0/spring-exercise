@@ -52,10 +52,33 @@ public class UserDao {
         jdbcContextWithStatementStrategy(new AddStrategy(user));
     }
 
-    public void deleteAll() {
-        this.jdbcContextWithStatementStrategy(new DeleteAllStrategy());
+    //한번만 쓰이는 AddStrategy 클래스를 따로 만들지 않고 익명 내부 클래스로 선언
+    public void insertAnonymous(User user){
+        jdbcContextWithStatementStrategy(new StatementStrategy() {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("INSERT INTO users(id,name,password) VALUES(?,?,?)");
+                ps.setString(1,user.getId());
+                ps.setString(2,user.getName());
+                ps.setString(3,user.getPassword());
+
+                return ps;
+            }
+        });
     }
 
+    public void deleteAll() {
+        jdbcContextWithStatementStrategy(new DeleteAllStrategy());
+    }
+
+    public void deleteAllAnonymous(){
+        jdbcContextWithStatementStrategy(new StatementStrategy() {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                return c.prepareStatement("DELETE FROM users");
+            }
+        });
+    }
     public User selectId(String id) {
         Connection connection = null;
         PreparedStatement ps = null;
