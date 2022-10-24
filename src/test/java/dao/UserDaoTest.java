@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,15 +53,19 @@ class UserDaoTest {
         assertEquals(user1.getName(), user.getName());
         assertEquals(user1.getPassword(), user.getPassword());
     }
+    @Test
+    void getAll(){
+        List<User> users = userDao.getAll();
+        assertEquals(0,users.size());
 
-//    @Test
-//    @DisplayName("anonymous test")
-//    void Anonymous(){
-//        userDao.insertAnonymous(user1);
-//        assertEquals(1, userDao.getCount());
-//        userDao.deleteAllAnonymous();
-//        assertEquals(0,userDao.getCount());
-//    }
+        userDao.insert(user1);
+        userDao.insert(user2);
+        userDao.insert(user3);
+
+        users = userDao.getAll();
+        assertEquals(3,users.size());
+
+    }
     @Test
     void count() throws SQLException, ClassNotFoundException {
 
