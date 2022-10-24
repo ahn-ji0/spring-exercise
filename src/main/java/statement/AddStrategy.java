@@ -15,7 +15,7 @@ public class AddStrategy implements StatementStrategy{
 
     @Override
     public PreparedStatement makeStatement(Connection c) throws SQLException {
-        PreparedStatement ps =  c.prepareStatement("INSERT INTO users(id,name,password) VALUES(?,?,?");
+        PreparedStatement ps =  c.prepareStatement("INSERT INTO users(id,name,password) VALUES(?,?,?)");
         ps.setString(1,user.getId());
         ps.setString(2,user.getName());
         ps.setString(3,user.getPassword());
